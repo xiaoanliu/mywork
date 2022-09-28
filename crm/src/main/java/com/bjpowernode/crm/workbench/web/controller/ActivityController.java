@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,13 +33,24 @@ public class ActivityController extends HttpServlet {
         String path = request.getServletPath();
         //if 判断中equals前面的路径开头有/=====
 //        System.out.println(path);
-        if ("/workbench/activity/xxx.do".equals(path)) {
-            login(request, response);
+        if ("/workbench/activity/getUserList.do".equals(path)) {
+            getUserList(request, response);
 
         } else if ("/workbench/activity/xxx.do".equals(path)) {
 
 
         }
+
+    }
+
+    private void getUserList(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("取得用户信息列表");
+        UserService us= (UserService) ServiceFactory.getService(new UserServiceImpl());
+        List<User> uList= us.getUserList();
+        //list集合转换成json数组
+        PrintJson.printJsonObj(response,uList);
+
 
     }
 
