@@ -3,9 +3,10 @@ package com.bjpowernode.crm.workbench.web.controller;
 import com.bjpowernode.crm.settings.domain.User;
 import com.bjpowernode.crm.settings.service.UserService;
 import com.bjpowernode.crm.settings.service.impl.UserServiceImpl;
-import com.bjpowernode.crm.utils.MD5Util;
-import com.bjpowernode.crm.utils.PrintJson;
-import com.bjpowernode.crm.utils.ServiceFactory;
+import com.bjpowernode.crm.utils.*;
+import com.bjpowernode.crm.workbench.domain.Activity;
+import com.bjpowernode.crm.workbench.service.ActivityService;
+import com.bjpowernode.crm.workbench.service.impl.ActivityServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,16 +32,47 @@ public class ActivityController extends HttpServlet {
 
         //拿到web.xml文件中的<url-pattern>/settings/user/login.do</url-pattern>中的内容
         String path = request.getServletPath();
+        System.out.println("path================="+path);
         //if 判断中equals前面的路径开头有/=====
 //        System.out.println(path);
         if ("/workbench/activity/getUserList.do".equals(path)) {
             getUserList(request, response);
 
-        } else if ("/workbench/activity/xxx.do".equals(path)) {
-
-
+        } else if ("/workbench/activity/save.do".equals(path)) {
+            save(request,response);
         }
 
+    }
+
+    private void save(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("执行市场活动的添加操作");
+        String id= UUIDUtil.getUUID();
+        String owner=request.getParameter("owner");
+        String name=request.getParameter("name");
+        String startDate=request.getParameter("startDate");
+        String endDate=request.getParameter("endDate");
+        String cost=request.getParameter("cost");
+        String description=request.getParameter("description");
+        //创建时间为当前系统时间
+        String createTime= DateTimeUtil.getSysTime();
+        //创建人为当前用户（从session中获取）
+        String createBy=((User)request.getSession().getAttribute("user")).getName();
+
+        Activity a=new Activity();
+        a.setId(id);
+        a.setCost(cost);
+        a.setOwner(owner);
+        a.setName(name);
+        a.setStartDate(startDate);
+        a.setEndDate(endDate);
+        a.setDescription(description);
+        a.setCreateTime(createTime);
+        a.setCreateBy(createBy);
+
+        ActivityService as= (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        boolean flag=as.save(a);
+
+        PrintJson.printJsonFlag(response,flag);
     }
 
     private void getUserList(HttpServletRequest request, HttpServletResponse response) {
