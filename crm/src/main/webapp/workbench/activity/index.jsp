@@ -25,7 +25,7 @@
             $("#addBtn").click(function () {
                 $(".time").datetimepicker({
                     minView: "month",
-                    language:  'zh-CN',
+                    language: 'zh-CN',
                     format: 'yyyy-mm-dd',
                     autoclose: true,
                     todayBtn: true,
@@ -36,10 +36,10 @@
                     type: "get",
                     dataType: "json",
                     success: function (data) {
-					    var html="<option></option>";
-                        $.each(data,function (i,n){
+                        var html = "<option></option>";
+                        $.each(data, function (i, n) {
                             //遍历出来的每一个n，就是每一个user对象
-                            html +="<option value='"+n.id+"'>"+n.name+"</option>";
+                            html += "<option value='" + n.id + "'>" + n.name + "</option>";
 
                         })
                         //下拉框设置默认值
@@ -53,21 +53,21 @@
                 })
             })
             //为保存按钮绑定事件，执行添加操作
-            $("#saveBtn").click(function (){
+            $("#saveBtn").click(function () {
                 $.ajax({
-                    url:"workbench/activity/save.do",
-                    data:{
-                        "owner":$.trim($("#create-owner").val()),
-                        "name":$.trim($("#create-name").val()),
-                        "startDate":$.trim($("#create-startDate").val()),
-                        "endDate":$.trim($("#create-endDate").val()),
-                        "cost":$.trim($("#create-cost").val()),
-                        "description":$.trim($("#create-description").val())
+                    url: "workbench/activity/save.do",
+                    data: {
+                        "owner": $.trim($("#create-owner").val()),
+                        "name": $.trim($("#create-name").val()),
+                        "startDate": $.trim($("#create-startDate").val()),
+                        "endDate": $.trim($("#create-endDate").val()),
+                        "cost": $.trim($("#create-cost").val()),
+                        "description": $.trim($("#create-description").val())
                     },
-                    type:"post",
-                    dataType:"json",
-                    success: function (data){
-                        if(data.success){
+                    type: "post",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.success) {
                             //添加成功刷新市场活动信息列表（局部刷新）
 
                             //清空窗口中的数据
@@ -77,7 +77,7 @@
                             //关闭添加操作的窗口
                             $("#createActivityModal").modal("hide");
 
-                        }else{
+                        } else {
                             alert("添加失败");
                         }
 
@@ -85,7 +85,63 @@
 
                 })
             })
+            //页面加载完毕后触发一个方法
+            pageList(1, 2);
+            $("#searchBtn").click(function () {
+                pageList(1, 2);
+            })
         });
+
+        //pageno:页码
+        //pageSize:记录数
+
+
+        function pageList(pageNo, pageSize) {
+
+            $.ajax({
+                url: "workbench/activity/pageList.do",
+                data: {
+                    "pageNo": pageNo,
+                    "pageSize": pageSize,
+                    "owner": $.trim($("#search-owner").val()),
+                    "name": $.trim($("#search-name").val()),
+                    "startDate": $.trim($("#search-startDate").val()),
+                    "endDate": $.trim($("#search-endDate").val())
+                },
+                type: "get",
+                dataType: "json",
+                success: function (data) {
+
+                    /*
+
+                        data
+
+                            我们需要的：市场活动信息列表
+                            [{市场活动1},{2},{3}] List<Activity> aList
+                            一会分页插件需要的：查询出来的总记录数
+                            {"total":100} int total
+
+                            {"total":100,"dataList":[{市场活动1},{2},{3}]}
+
+                     */
+                    var html = "";
+
+                    //每一个n就是每一个对象
+                    $.each(data.dataList, function (i, n) {
+                     html +='<tr class="active">';
+                     html +='    <td><input type="checkbox" value="'+n.id+'"/></td>';
+                     html +='   <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'detail.html\';">'+n.name+'</a></td>';
+                     html +='    <td>'+n.owner+'</td>';
+                     html +='    <td>'+n.startDate+'</td>';
+                     html +='    <td>'+n.endDate+'</td>';
+                     html +='</tr>';
+                    })
+                    $("#activityBody").html(html);
+
+                }
+
+            })
+        }
 
     </script>
 </head>
@@ -110,9 +166,9 @@
                                 style="font-size: 15px; color: red;">*</span></label>
                         <div class="col-sm-10" style="width: 300px;">
                             <select class="form-control" id="create-owner">
-<%--                                <option>zhangsan</option>--%>
-<%--                                <option>lisi</option>--%>
-<%--                                <option>wangwu</option>--%>
+                                <%--                                <option>zhangsan</option>--%>
+                                <%--                                <option>lisi</option>--%>
+                                <%--                                <option>wangwu</option>--%>
                             </select>
                         </div>
                         <label for="create-marketActivityName" class="col-sm-2 control-label">名称<span
@@ -241,14 +297,14 @@
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">名称</div>
-                        <input class="form-control" type="text">
+                        <input class="form-control" type="text" id="search-name">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">所有者</div>
-                        <input class="form-control" type="text">
+                        <input class="form-control" type="text" id="search-owner">
                     </div>
                 </div>
 
@@ -256,17 +312,17 @@
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">开始日期</div>
-                        <input class="form-control" type="text" id="startTime"/>
+                        <input class="form-control" type="text" id="search-startDate"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">结束日期</div>
-                        <input class="form-control" type="text" id="endTime">
+                        <input class="form-control" type="text" id="search-endDate">
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-default">查询</button>
+                <button type="button" id="searchBtn" class="btn btn-default">查询</button>
 
             </form>
         </div>
@@ -294,23 +350,23 @@
                     <td>结束日期</td>
                 </tr>
                 </thead>
-                <tbody>
-                <tr class="active">
-                    <td><input type="checkbox"/></td>
-                    <td><a style="text-decoration: none; cursor: pointer;"
-                           onclick="window.location.href='detail.html';">发传单</a></td>
-                    <td>zhangsan</td>
-                    <td>2020-10-10</td>
-                    <td>2020-10-20</td>
-                </tr>
-                <tr class="active">
-                    <td><input type="checkbox"/></td>
-                    <td><a style="text-decoration: none; cursor: pointer;"
-                           onclick="window.location.href='detail.html';">发传单</a></td>
-                    <td>zhangsan</td>
-                    <td>2020-10-10</td>
-                    <td>2020-10-20</td>
-                </tr>
+                <tbody id="activityBody">
+                <%--                <tr class="active">--%>
+                <%--                    <td><input type="checkbox"/></td>--%>
+                <%--                    <td><a style="text-decoration: none; cursor: pointer;"--%>
+                <%--                           onclick="window.location.href='detail.html';">发传单</a></td>--%>
+                <%--                    <td>zhangsan</td>--%>
+                <%--                    <td>2020-10-10</td>--%>
+                <%--                    <td>2020-10-20</td>--%>
+                <%--                </tr>--%>
+                <%--                <tr class="active">--%>
+                <%--                    <td><input type="checkbox"/></td>--%>
+                <%--                    <td><a style="text-decoration: none; cursor: pointer;"--%>
+                <%--                           onclick="window.location.href='detail.html';">发传单</a></td>--%>
+                <%--                    <td>zhangsan</td>--%>
+                <%--                    <td>2020-10-10</td>--%>
+                <%--                    <td>2020-10-20</td>--%>
+                <%--                </tr>--%>
                 </tbody>
             </table>
         </div>

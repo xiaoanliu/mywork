@@ -4,6 +4,7 @@ import com.bjpowernode.crm.settings.domain.User;
 import com.bjpowernode.crm.settings.service.UserService;
 import com.bjpowernode.crm.settings.service.impl.UserServiceImpl;
 import com.bjpowernode.crm.utils.*;
+import com.bjpowernode.crm.vo.PaginationVO;
 import com.bjpowernode.crm.workbench.domain.Activity;
 import com.bjpowernode.crm.workbench.service.ActivityService;
 import com.bjpowernode.crm.workbench.service.impl.ActivityServiceImpl;
@@ -31,6 +32,7 @@ public class ActivityController extends HttpServlet {
         System.out.println("进入到市场活动控制器");
 
         //拿到web.xml文件中的<url-pattern>/settings/user/login.do</url-pattern>中的内容
+        //getServletPath():获取能够与“url-pattern”中匹配的路径，注意是完全匹配的部分，*的部分不包括。
         String path = request.getServletPath();
         System.out.println("path================="+path);
         //if 判断中equals前面的路径开头有/=====
@@ -40,7 +42,37 @@ public class ActivityController extends HttpServlet {
 
         } else if ("/workbench/activity/save.do".equals(path)) {
             save(request,response);
+        } else if ("/workbench/activity/pageList.do".equals(path)) {
+            pageList(request,response);
         }
+
+    }
+
+    private void pageList(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("查询信息列表的操作");
+        String name=request.getParameter("name");
+        String owner=request.getParameter("owner");
+        String startDate=request.getParameter("startDate");
+        String endDate=request.getParameter("endDate");
+        String pageNoStr=request.getParameter("pageNo");
+        int pageNo=Integer.valueOf(pageNoStr);
+        String pageSizeStr=request.getParameter("pageSize");
+        int pageSize=Integer.valueOf(pageSizeStr);
+        //分页查询
+        int skipCount=(pageNo-1)*pageSize;
+        Map<String,Object> map=new HashMap<String,Object>();
+        map.put("name",name);
+        map.put("owner",owner);
+        map.put("startDate",startDate);
+        map.put("endDate",endDate);
+        map.put("skipCount",skipCount);
+        map.put("pageSize",pageSize);
+        ActivityService as= (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        //前端需要的信息。。
+        PaginationVO<Activity> vo=as.pageList(map);
+        System.out.println("vo============="+vo);
+        PrintJson.printJsonObj(response,vo);
+        System.out.println("vo============="+vo);
 
     }
 
