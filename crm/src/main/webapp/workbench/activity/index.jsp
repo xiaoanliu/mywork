@@ -17,6 +17,9 @@
     <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
     <script type="text/javascript"
             src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
+    <link rel="stylesheet" type="text/css" href="jquery/bs_pagination/jquery.bs_pagination.min.css">
+    <script type="text/javascript" src="jquery/bs_pagination/jquery.bs_pagination.min.js"></script>
+    <script type="text/javascript" src="jquery/bs_pagination/en.js"></script>
 
     <script type="text/javascript">
 
@@ -71,7 +74,7 @@
                             //添加成功刷新市场活动信息列表（局部刷新）
 
                             //清空窗口中的数据
-                            $("#activityAddForm")[0].reset();
+                            // $("#activityAddForm")[0].reset();
 
 
                             //关闭添加操作的窗口
@@ -85,11 +88,31 @@
 
                 })
             })
-            //页面加载完毕后触发一个方法
-            pageList(1, 2);
+            //页面加载时执行方法
+            pageList(1, 3);
+            //查询按钮执行方法
             $("#searchBtn").click(function () {
-                pageList(1, 2);
+                //将所搜框中的内容保存到隐藏域中
+
+                    $("#hidden-endDate").val($.trim($("#search-endDate").val()));
+                    $("#hidden-name").val($.trim($("#search-name").val()));
+                    $("#hidden-owner").val($.trim($("#search-owner").val()));
+                    $("#hidden-startDate").val($.trim($("#search-startDate").val()));
+
+                    //调用方法
+                    pageList(1, 3);
             })
+            //全选操作
+            $("#qx").click(function (){
+                $("input[name=xz]").prop("checked",this.checked);
+            })
+
+            //动态元素操作
+
+            $("#activityBody").on("click",$("input[name=xz]"),function(){
+               $("#qx").prop("checked",$("input[name=xz]").length==$("input[name=xz]:checked").length);
+            })
+
         });
 
         //pageno:页码
@@ -97,9 +120,13 @@
 
 
         function pageList(pageNo, pageSize) {
-
+            $("#search-endDate").val($.trim($("#hidden-endDate").val()));
+            $("#search-name").val($.trim($("#hidden-name").val()));
+            $("#search-owner").val($.trim($("#hidden-owner").val()));
+            $("#search-startDate").val($.trim($("#hidden-startDate").val()));
             $.ajax({
                 url: "workbench/activity/pageList.do",
+
                 data: {
                     "pageNo": pageNo,
                     "pageSize": pageSize,
@@ -128,16 +155,37 @@
 
                     //每一个n就是每一个对象
                     $.each(data.dataList, function (i, n) {
-                     html +='<tr class="active">';
-                     html +='    <td><input type="checkbox" value="'+n.id+'"/></td>';
-                     html +='   <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'detail.html\';">'+n.name+'</a></td>';
-                     html +='    <td>'+n.owner+'</td>';
-                     html +='    <td>'+n.startDate+'</td>';
-                     html +='    <td>'+n.endDate+'</td>';
-                     html +='</tr>';
+                        html += '<tr class="active">';
+                        html += '<td><input type="checkbox" name="xz" value="' + n.id + '"/></td>';
+                        html += '<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'detail.html\';">' + n.name + '</a></td>';
+                        html += '<td>' + n.owner + '</td>';
+                        html += '<td>' + n.startDate + '</td>';
+                        html += '<td>' + n.endDate + '</td>';
+                        html += '</tr>';
                     })
                     $("#activityBody").html(html);
 
+                    var totalPages = data.total % pageSize == 0 ? data.total / pageSize : parseInt(data.total / pageSize) + 1;
+                    //数据处理完毕展现数据分页信息
+                    $("#activityPage").bs_pagination({
+                        currentPage: pageNo, // 页码
+                        rowsPerPage: pageSize, // 每页显示的记录条数
+                        maxRowsPerPage: 20, // 每页最多显示的记录条数
+                        totalPages: totalPages, // 总页数
+                        totalRows: data.total, // 总记录条数
+
+                        visiblePageLinks: 3, // 显示几个卡片
+
+                        showGoToPage: true,
+                        showRowsPerPage: true,
+                        showRowsInfo: true,
+                        showRowsDefaultInfo: true,
+
+                        //该回调函数时在，点击分页组件的时候触发的
+                        onChangePage: function (event, data) {
+                            pageList(data.currentPage, data.rowsPerPage);
+                        }
+                    });
                 }
 
             })
@@ -146,6 +194,13 @@
     </script>
 </head>
 <body>
+
+
+<input id="hidden-name" type="hidden"/>
+<input id="hidden-owner" type="hidden"/>
+<input id="hidden-startDate" type="hidden"/>
+<input id="hidden-endDate" type="hidden"/>
+
 
 <!-- 创建市场活动的模态窗口 -->
 <div class="modal fade" id="createActivityModal" role="dialog">
@@ -343,7 +398,7 @@
             <table class="table table-hover">
                 <thead>
                 <tr style="color: #B3B3B3;">
-                    <td><input type="checkbox"/></td>
+                    <td><input type="checkbox" id="qx"/></td>
                     <td>名称</td>
                     <td>所有者</td>
                     <td>开始日期</td>
@@ -351,59 +406,15 @@
                 </tr>
                 </thead>
                 <tbody id="activityBody">
-                <%--                <tr class="active">--%>
-                <%--                    <td><input type="checkbox"/></td>--%>
-                <%--                    <td><a style="text-decoration: none; cursor: pointer;"--%>
-                <%--                           onclick="window.location.href='detail.html';">发传单</a></td>--%>
-                <%--                    <td>zhangsan</td>--%>
-                <%--                    <td>2020-10-10</td>--%>
-                <%--                    <td>2020-10-20</td>--%>
-                <%--                </tr>--%>
-                <%--                <tr class="active">--%>
-                <%--                    <td><input type="checkbox"/></td>--%>
-                <%--                    <td><a style="text-decoration: none; cursor: pointer;"--%>
-                <%--                           onclick="window.location.href='detail.html';">发传单</a></td>--%>
-                <%--                    <td>zhangsan</td>--%>
-                <%--                    <td>2020-10-10</td>--%>
-                <%--                    <td>2020-10-20</td>--%>
-                <%--                </tr>--%>
+
                 </tbody>
             </table>
         </div>
 
         <div style="height: 50px; position: relative;top: 30px;">
-            <div>
-                <button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
-            </div>
-            <div class="btn-group" style="position: relative;top: -34px; left: 110px;">
-                <button type="button" class="btn btn-default" style="cursor: default;">显示</button>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        10
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">20</a></li>
-                        <li><a href="#">30</a></li>
-                    </ul>
-                </div>
-                <button type="button" class="btn btn-default" style="cursor: default;">条/页</button>
-            </div>
-            <div style="position: relative;top: -88px; left: 285px;">
-                <nav>
-                    <ul class="pagination">
-                        <li class="disabled"><a href="#">首页</a></li>
-                        <li class="disabled"><a href="#">上一页</a></li>
-                        <li class="active"><a href="#">1</a></li>
-                        <li><a href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
-                        <li><a href="#">5</a></li>
-                        <li><a href="#">下一页</a></li>
-                        <li class="disabled"><a href="#">末页</a></li>
-                    </ul>
-                </nav>
-            </div>
+            <div id="activityPage"></div>
+
+
         </div>
 
     </div>
