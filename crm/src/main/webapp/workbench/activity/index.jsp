@@ -26,14 +26,7 @@
         $(function () {
             //为创建按钮绑定事件
             $("#addBtn").click(function () {
-                $(".time").datetimepicker({
-                    minView: "month",
-                    language: 'zh-CN',
-                    format: 'yyyy-mm-dd',
-                    autoclose: true,
-                    todayBtn: true,
-                    pickerPosition: "bottom-left"
-                });
+
                 $.ajax({
                     url: "workbench/activity/getUserList.do",
                     type: "get",
@@ -78,7 +71,7 @@
                              * 	$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
 
                              */
-                            pageList(1,$("#activityPage").bs_pagination('getOption', 'currentPage'));
+                            pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
 
                             //清空窗口中的数据
                             $("#activityAddForm")[0].reset();
@@ -96,7 +89,7 @@
                 })
             })
             //页面加载时执行方法
-            pageList(1, 2);
+             pageList(1, 2);
             //查询按钮执行方法
             $("#searchBtn").click(function () {
                 //将所搜框中的内容保存到隐藏域中
@@ -104,7 +97,7 @@
                     $("#hidden-endDate").val($.trim($("#search-endDate").val()));
                     $("#hidden-name").val($.trim($("#search-name").val()));
                     $("#hidden-owner").val($.trim($("#search-owner").val()));
-                    $("#hidden-startDate").val($.trim($("#search-startDate").val()));
+                     $("#hidden-startDate").val($.trim($("#search-startDate").val()));
 
                     //调用方法
                     pageList(1, 2);
@@ -253,6 +246,15 @@
 
 
         function pageList(pageNo, pageSize) {
+
+            $(".time").datetimepicker({
+                minView: "month",
+                language: 'zh-CN',
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayBtn: true,
+                pickerPosition: "bottom-left"
+            });
 
             $("#qx").prop("checked",false);
 
@@ -480,7 +482,7 @@
 <div>
     <div style="position: relative; left: 10px; top: -10px;">
         <div class="page-header">
-            <h3>市场活动列表123</h3>
+            <h3>市场活动列表</h3>
         </div>
     </div>
 </div>
@@ -508,13 +510,13 @@
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">开始日期</div>
-                        <input class="form-control" type="text" id="search-startDate"/>
+                        <input type="text" class="form-control time" id="search-startDate" readonly>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">结束日期</div>
-                        <input class="form-control" type="text" id="search-endDate">
+                        <input type="text" class="form-control time" id="search-endDate" readonly>
                     </div>
                 </div>
 
@@ -547,11 +549,10 @@
                 </tr>
                 </thead>
                 <tbody id="activityBody">
-
                 </tbody>
             </table>
         </div>
-
+<%--分页div--%>
         <div style="height: 50px; position: relative;top: 30px;">
             <div id="activityPage"></div>
 

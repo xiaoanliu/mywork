@@ -119,6 +119,9 @@ public class ActivityController extends HttpServlet {
         int pageNo=Integer.valueOf(pageNoStr);
         String pageSizeStr=request.getParameter("pageSize");
         int pageSize=Integer.valueOf(pageSizeStr);
+
+        System.out.println("startDate============"+startDate);
+        System.out.println("endDate==========="+endDate);
         //分页查询
         int skipCount=(pageNo-1)*pageSize;
         Map<String,Object> map=new HashMap<String,Object>();
@@ -128,6 +131,7 @@ public class ActivityController extends HttpServlet {
         map.put("endDate",endDate);
         map.put("skipCount",skipCount);
         map.put("pageSize",pageSize);
+        //获取service 对象
         ActivityService as= (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
         //前端需要的信息。。
         PaginationVO<Activity> vo=as.pageList(map);

@@ -1,28 +1,77 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/";
+%>
 <!DOCTYPE html>
+<base href="<%=basePath%>">
 <html>
 <head>
 <meta charset="UTF-8">
 
-<link href="../../jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
-<link href="../../jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
+<link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+<link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
 
-<script type="text/javascript" src="../../jquery/jquery-1.11.1-min.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
+<script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
-<script type="text/javascript">
+ <script type="text/javascript">
 
 	$(function(){
-		
-		
-		
+		pageList(1,2);
+		$("#searchBtn").click(function () {
+			// e.stopPropagation();   //表示阻止向父元素冒泡
+			// e.preventDefault();     //阻止 方法阻止元素发生默认的行为（例如，当点击提交按钮时阻止对表单的提交或者a标签）。
+			// $("#hidden-company").val($.trim($("#searchComp").val()));
+			pageList(1,2);
+		})
 	});
-	
-</script>
+	function pageList(pageNo, pageSize) {
+		alert($("#searchComp").val());
+		$.ajax({
+			url:"workbench/clue/search.do",
+			data: {
+				"pageNo": pageNo,
+				"pageSize": pageSize,
+				"fullname": $.trim($("#searchName").val()),
+				"company": $.trim($("#searchComp").val()),
+				"phone": $.trim($("#searchPhone").val()),
+				"source": $.trim($("#searchSource").val()),
+				"owner": $.trim($("#searchOwner").val()),
+				"mphone": $.trim($("#searchTel").val()),
+				"state": $.trim($("#searchState").val())
+			},
+			type: "get",
+			dataType: "json",
+			success: function (data) {
+				// console.log("返回成功");
+				// alert("返回成功");
+				var html = "";
+				$.each(data.dataList, function (i, n) {
+					html += '<tr class="clue">';
+					html += '<td><input type="checkbox" name="xz" value="' + n.id + '"/></td>';
+					html += '<td>' + n.fullname + '</td>';
+					html += '<td>' + n.company + '</td>';
+					html += '<td>' + n.phone + '</td>';
+					html += '<td>' + n.mphone + '</td>';
+					html += '<td>' + n.source + '</td>';
+					html += '<td>' + n.owner + '</td>';
+					html += '<td>' + n.state + '</td>';
+					html += '</tr>';
+				})
+				// alert(html);
+				$("#clueBody").html(html);
+
+			}
+
+		})
+	}
+
+	</script>
 </head>
 <body>
-
+<input id="hidden-company" type="hidden"/>
 	<!-- 创建线索的模态窗口 -->
 	<div class="modal fade" id="createClueModal" role="dialog">
 		<div class="modal-dialog" role="document" style="width: 90%;">
@@ -356,29 +405,29 @@
 				  
 				  <div class="form-group">
 				    <div class="input-group">
-				      <div class="input-group-addon">名称</div>
-				      <input class="form-control" type="text">
+				      <div class="input-group-addon">名11称</div>
+				      <input class="form-control" type="text" id="searchName">
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">公司</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="searchComp">
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">公司座机</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="searchPhone">
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">线索来源</div>
-					  <select class="form-control">
+					  <select class="form-control" id="searchSource">
 					  	  <option></option>
 					  	  <option>广告</option>
 						  <option>推销电话</option>
@@ -403,7 +452,7 @@
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">所有者</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="searchOwner">
 				    </div>
 				  </div>
 				  
@@ -412,14 +461,14 @@
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">手机</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="searchTel">
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">线索状态</div>
-					  <select class="form-control">
+					  <select class="form-control" id="searchState">
 					  	<option></option>
 					  	<option>试图联系</option>
 					  	<option>将来联系</option>
@@ -431,10 +480,9 @@
 					  </select>
 				    </div>
 				  </div>
-
-				  <button type="submit" class="btn btn-default">查询</button>
-				  
+					<button type="button" class="btn btn-default" id="searchBtn">查询</button>
 				</form>
+
 			</div>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 40px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
@@ -450,7 +498,7 @@
 					<thead>
 						<tr style="color: #B3B3B3;">
 							<td><input type="checkbox" /></td>
-							<td>名称</td>
+							<td>名22称</td>
 							<td>公司</td>
 							<td>公司座机</td>
 							<td>手机</td>
@@ -459,27 +507,7 @@
 							<td>线索状态</td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
-							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">李四先生</a></td>
-							<td>动力节点</td>
-							<td>010-84846003</td>
-							<td>12345678901</td>
-							<td>广告</td>
-							<td>zhangsan</td>
-							<td>已联系</td>
-						</tr>
-                        <tr class="active">
-                            <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">李四先生</a></td>
-                            <td>动力节点</td>
-                            <td>010-84846003</td>
-                            <td>12345678901</td>
-                            <td>广告</td>
-                            <td>zhangsan</td>
-                            <td>已联系</td>
-                        </tr>
+					<tbody id="clueBody">
 					</tbody>
 				</table>
 			</div>

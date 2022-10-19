@@ -72,11 +72,12 @@
 </head>
 <body>
 	<div style="position: absolute; top: 0px; left: 0px; width: 60%;">
-		<img src="image/preview1.jpg" style="width: 120%; height: 90%; position: relative; top: 50px;">
+		<img src="image/preview1.jpg" style="width: 80%; height:30%; position: relative; top: 50px;">
+
 	</div>
 	<div id="top" style="height: 50px; background-color: #3C3C3C; width: 100%;">
 
-		<div style="position: absolute; top: 5px; left: 0px; font-size: 30px; font-weight: 400; color: white; font-family: 'times new roman'">CRM &nbsp;<span style="font-size: 12px;">随便玩玩</span></div>
+		<div style="position: absolute; top: 5px; left: 0px; font-size: 30px; font-weight: 400; color: white; font-family: 'times new roman'">&nbsp<span style="font-size: 12px;">刘小安</span></div>
 	</div>
 
 	<div b style="position: absolute; top: 120px; right: 100px;width:450px;height:400px;border:1px solid #D5D5D5">
@@ -102,6 +103,17 @@
 				</div>
 			</form>
 		</div>
+
 	</div>
+<div>
+	<p class="1h">
+	</p>
+</div>
+
 </body>
+<footer style="position: fixed ;margin-left: 800px; bottom: 0px;">
+	<img src="http://www.beian.gov.cn/img/new/gongan.png">
+ 	<a class="text-color" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010502050982" target="_blank">京公网安备11010502050982号</a>&nbsp&nbsp京ICP备2022028401号
+
+</footer>
 </html>

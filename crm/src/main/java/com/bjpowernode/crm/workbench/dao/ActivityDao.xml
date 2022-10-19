@@ -87,7 +87,7 @@
             </if>
 
             <if test="endDate!=null and endDate!=''">
-                and a.endDate &lt;  #{endDate}
+                and a.endDate &lt; #{endDate}
             </if>
         </where>
 
